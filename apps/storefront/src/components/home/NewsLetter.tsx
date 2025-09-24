@@ -16,7 +16,7 @@ const NewsLetter = () => {
                 <div className="bg-white dark:bg-gray-900 rounded-lg p-8 lg:p-12 relative overflow-hidden">
                     <div className="text-4xl lg:text-6xl absolute right-4 lg:right-8 top-4 lg:top-8 opacity-20">🥬</div>
                     <div className="max-w-2xl relative z-10">
-                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray:600 dark:text-white mb-4 leading-tight">
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-600 dark:text-white mb-4 leading-tight">
                             Stay home & get your daily<br className="hidden sm:block" />
                             needs from our shop
                         </h2>

@@ -2,14 +2,14 @@
 import {useEffect, useState} from "react";
 
 // Import product images
-import GreenApple from "../assets/products/green-apple.png";
-import Oranges from "../assets/products/oranges.png";
-import ChineseCabbage from "../assets/products/chinese-cabbage.png";
-import Lettuce from "../assets/products/lettuce.png";
-import Eggplant from "../assets/products/eggplant.png";
-import Potatoes from "../assets/products/potatoes.png";
-import Corn from "../assets/products/corn.png";
-import Cauliflower from "../assets/products/cauliflower.png";
+import GreenApple from "../../assets/products/green-apple.png";
+import Oranges from "../../assets/products/oranges.png";
+import ChineseCabbage from "../../assets/products/chinese-cabbage.png";
+import Lettuce from "../../assets/products/lettuce.png";
+import Eggplant from "../../assets/products/eggplant.png";
+import Potatoes from "../../assets/products/potatoes.png";
+import Corn from "../../assets/products/corn.png";
+import Cauliflower from "../../assets/products/cauliflower.png";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -51,15 +51,18 @@ const HotDeals = () => {
 
 
     return(
- <section className="py-12 lg:py-16 bg-white dark:bg-gray-900 transition-colors duration-300">
-     <div className="container mx-auto px-4">
-         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-             <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">Hot Deals</h2>
-             <Link href="/deals" className="text-green-600 dark:text-green-500 hover:text-green-700 dark:hover:text-green-400 font-medium transition-colors duration-200 flex items-center group">
-                 View All
-                 <span className="ml-1 group-hover:translate-x-1 transition-transform duration-200">→</span>
-             </Link>
-         </div>
+        <section className="py-12 lg:py-16 bg-white dark:bg-gray-900 transition-colors duration-300">
+            <div className="container mx-auto px-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                    <div>
+                        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-2">Hot Deals</h2>
+                        <p className="text-gray-600 dark:text-gray-400">Limited time offers on your favorite products</p>
+                    </div>
+                    <Link href="/deals" className="text-green-600 dark:text-green-500 hover:text-green-700 dark:hover:text-green-400 font-medium transition-colors duration-200 flex items-center group">
+                        View All
+                        <span className="ml-1 group-hover:translate-x-1 transition-transform duration-200">→</span>
+                    </Link>
+                </div>
 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 {/*    Featured  Deal */}
 
