@@ -2,32 +2,21 @@
 import {useEffect, useState} from "react";
 
 // Import product images
-import GreenApple from "../../assets/products/green-apple.png";
-import Oranges from "../../assets/products/oranges.png";
-import ChineseCabbage from "../../assets/products/chinese-cabbage.png";
-import Lettuce from "../../assets/products/lettuce.png";
-import Eggplant from "../../assets/products/eggplant.png";
-import Potatoes from "../../assets/products/potatoes.png";
-import Corn from "../../assets/products/corn.png";
-import Cauliflower from "../../assets/products/cauliflower.png";
 
-import Link from "next/link";
-import Image from "next/image";
 import {Star, ShoppingCart} from "lucide-react";
 
 const HotDeals = () => {
-
     const [timeLeft, setTimeLeft] = useState({ days: 2, hours: 18, minutes: 54, seconds: 21 });
 
     const products = [
-        { id: 1, name: 'Green Apple', price: 14.99, originalPrice: 20.99, image: GreenApple, rating: 4, inStock: true, sale: true },
-        { id: 2, name: 'Fresh Orange', price: 20.99, image: Oranges, rating: 5, inStock: true },
-        { id: 3, name: 'Chinese Cabbage', price: 12.99, image: ChineseCabbage, rating: 4, inStock: true },
-        { id: 4, name: 'Green Lettuce', price: 9.99, image: Lettuce, rating: 4, inStock: true },
-        { id: 5, name: 'Eggplant', price: 34.99, image: Eggplant, rating: 5, inStock: true },
-        { id: 6, name: 'Big Potatoes', price: 20.99, image: Potatoes, rating: 3, inStock: true },
-        { id: 7, name: 'Corn', price: 20.99, image: Corn, rating: 5, inStock: true },
-        { id: 8, name: 'Fresh Cauliflower', price: 12.99, image: Cauliflower, rating: 4, inStock: true }
+        { id: 1, name: 'Premium Green Apple', price: 14.99, originalPrice: 20.99, emoji: '🍎', rating: 4 },
+        { id: 2, name: 'Fresh Orange', price: 20.99, emoji: '🍊', rating: 5 },
+        { id: 3, name: 'Chinese Cabbage', price: 12.99, emoji: '🥬', rating: 4 },
+        { id: 4, name: 'Green Lettuce', price: 9.99, emoji: '🥬', rating: 4 },
+        { id: 5, name: 'Eggplant', price: 34.99, emoji: '🍆', rating: 5 },
+        { id: 6, name: 'Big Potatoes', price: 20.99, emoji: '🥔', rating: 3 },
+        { id: 7, name: 'Sweet Corn', price: 20.99, emoji: '🌽', rating: 5 },
+        { id: 8, name: 'Fresh Cauliflower', price: 12.99, emoji: '🥦', rating: 4 }
     ];
 
     useEffect(() => {
@@ -49,104 +38,92 @@ const HotDeals = () => {
         return () => clearInterval(timer);
     }, []);
 
+    return (
+        <section className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden">
+            <div className="absolute inset-0 opacity-5">
+                <div className="absolute top-20 right-20 w-48 h-48 bg-red-500 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-20 left-20 w-40 h-40 bg-orange-500 rounded-full blur-3xl"></div>
+            </div>
 
-    return(
-        <section className="py-12 lg:py-16 bg-white dark:bg-gray-900 transition-colors duration-300">
-            <div className="container mx-auto px-4">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-                    <div>
-                        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-2">Hot Deals</h2>
-                        <p className="text-gray-600 dark:text-gray-400">Limited time offers on your favorite products</p>
+            <div className="container mx-auto px-4 relative z-10">
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white mb-6">
+                        🔥 Hot Deals
+                    </h2>
+                    <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                        Limited time offers on your favorite products. Grab them before they're gone!
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    {/* Featured Deal Card */}
+                    <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-200 dark:border-red-700 rounded-3xl p-8 shadow-2xl">
+                        <div className="text-center">
+                            <div className="w-32 h-32 mx-auto mb-6 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center text-6xl shadow-lg">
+                                🍎
+                            </div>
+                            <h3 className="text-2xl font-bold mb-3 text-gray-800 dark:text-white">
+                                Premium Green Apple
+                            </h3>
+                            <div className="flex items-center justify-center mb-6">
+                                <span className="text-3xl font-bold text-red-600">$12.99</span>
+                                <span className="text-gray-500 dark:text-gray-400 line-through ml-3 text-lg">$16.99</span>
+                            </div>
+                            <div className="flex justify-center mb-6">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                                ))}
+                            </div>
+                            <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-6 overflow-hidden">
+                                <div className="bg-gradient-to-r from-red-500 to-orange-500 h-full rounded-full animate-pulse" style={{width: '78%'}}></div>
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 font-medium">⏰ Offer ends in:</p>
+
+                            <div className="grid grid-cols-4 gap-3 text-sm mb-6">
+                                {[
+                                    { label: 'DAYS', value: timeLeft.days },
+                                    { label: 'HOURS', value: timeLeft.hours },
+                                    { label: 'MINS', value: timeLeft.minutes },
+                                    { label: 'SECS', value: timeLeft.seconds }
+                                ].map((item, idx) => (
+                                    <div key={idx} className="bg-gray-800 dark:bg-gray-700 text-white p-3 rounded-xl text-center">
+                                        <div className="text-xl font-bold">{item.value}</div>
+                                        <div className="text-xs opacity-75">{item.label}</div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <button className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white py-4 rounded-full font-bold transition-all duration-300 shadow-lg hover:shadow-xl">
+                                Grab This Deal
+                            </button>
+                        </div>
                     </div>
-                    <Link href="/deals" className="text-green-600 dark:text-green-500 hover:text-green-700 dark:hover:text-green-400 font-medium transition-colors duration-200 flex items-center group">
-                        View All
-                        <span className="ml-1 group-hover:translate-x-1 transition-transform duration-200">→</span>
-                    </Link>
-                </div>
-<div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-{/*    Featured  Deal */}
 
-    <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-2 border-green-200 dark:border-green-700 rounded-lg p-6">
-        <div className="text-center">
-            <div className="relative w-24 h-24 mx-auto mb-4">
-                <Image
-                    src={GreenApple}
-                    alt="Green Apple"
-                    fill
-                    className="object-contain"
-                />
-            </div>
-<h3 className="font-bold text-lg mb-2 text-gray-800 dark:text-white">
-    Green apple
-</h3>
-            <div className="flex itens-center justify-center mb-4">
-                <span className="text-2xl font-bold text-green-600">$12.99</span>
-                <span className="text-gray-500 dark:text-gray-400 line-through ml-2">$16.99</span>
-            </div>
-            <div className="flex justify-center mb-4">
-                {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                ))}
-            </div>
-            <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
-                <div className="bg-green-600 h-full rounded-full" style={{width: '78%'}}></div>
-
-            </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Hurry up! Offer ends in:</p>
-
-            <div className="grid grid-cols-4 gap-2 text-sm">
-                <div className="bg-gray-800 dark:bg-gray-700 text-white px-2 py-2 rounded text-center">
-                    <div className="font-bold">{timeLeft.days}</div>
-                    <div className="text-xs opacity-75">DAYS</div>
-                </div>
-
-                <div className="bg-gray-800 dark:bg-gray-700 text-white px-2 py-2 rounded text-center">
-                    <div className="font-bold">{timeLeft.hours}</div>
-                    <div className="text-xs opacity-75">HOURS</div>
-                </div>
-
-                <div className="bg-gray-800 dark:bg-gray-700 text-white px-2 py-2 rounded text-center">
-                    <div className="font-bold">{timeLeft.minutes}</div>
-                    <div className="text-xs opacity-75">MINS</div>
-                </div>
-                <div className="bg-gray-800 dark:bg-gray-700 text-white px-2 py-2 rounded text-center">
-                    <div className="font-bold">{timeLeft.seconds}</div>
-                    <div className="text-xs opacity-75">SECS</div>
-                </div>
-            </div>
-        </div>
-</div>
-
-    {/* Product Grid */}
-    <div className="lg:col-span-3">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {products.slice(0, 8).map((product) => (
-                <div key={product.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-900/20 transition-all duration-300 hover:-translate-y-1 group">
-                    <div className="relative w-full h-24 mb-3 overflow-hidden rounded">
-                        <Image
-                            src={product.image}
-                            alt={product.name}
-                            fill
-                            className="object-contain group-hover:scale-105 transition-transform duration-300"
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
-                        />
-                    </div>
-                    <h3 className="font-medium text-gray-800 dark:text-white mb-2 text-sm line-clamp-2">{product.name}</h3>
-                    <div className="flex items-center justify-between">
-                        <span className="font-bold text-green-600 dark:text-green-500">${product.price}</span>
-                        <button className="text-green-600 dark:text-green-500 hover:text-green-700 dark:hover:text-green-400 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                            <ShoppingCart className="w-4 h-4" />
-                        </button>
+                    {/* Product Grid */}
+                    <div className="lg:col-span-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-6">
+                            {products.slice(0, 6).map((product) => (
+                                <div key={product.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:shadow-xl dark:hover:shadow-gray-900/20 transition-all duration-300 hover:-translate-y-1 group">
+                                    <div className="h-24 flex items-center justify-center mb-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                                        <span className="text-4xl group-hover:scale-110 transition-transform duration-300">
+                                            {product.emoji}
+                                        </span>
+                                    </div>
+                                    <h3 className="font-bold text-gray-800 dark:text-white mb-2 text-sm line-clamp-2">{product.name}</h3>
+                                    <div className="flex items-center justify-between">
+                                        <span className="font-bold text-green-600 dark:text-green-500 text-lg">${product.price}</span>
+                                        <button className="text-green-600 dark:text-green-500 hover:text-green-700 dark:hover:text-green-400 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110">
+                                            <ShoppingCart className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            ))}
-        </div>
-    </div>
-</div>
-     </div>
- </section>
+            </div>
+        </section>
     );
 };
-
 
 export  default  HotDeals
