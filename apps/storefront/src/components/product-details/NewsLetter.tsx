@@ -17,7 +17,7 @@ export const Newsletter = () => {
 
     return (
 
-        <section className="bg-muted py-12 mx-auto ">
+        <section className="bg-muted py-12 mt-12 mx-auto ">
             <div className="container mx-auto px-4">
                 <div className="max-w-md">
                     <h2 className="text-2xl font-bold text-foreground mb-2">Subscribe our Newsletter</h2>
@@ -26,7 +26,7 @@ export const Newsletter = () => {
                     </p>
 
                 <form onSubmit={handleSubmit} className="max-w-md mx-auto mb-8">
-                    <div className="flex">
+                    <div className="flex gap-2">
                         <input
                             type="email"
                             value={email}

@@ -9,33 +9,8 @@ const Footer = () => {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="bg-gray-900 dark:bg-black text-white transition-colors duration-300">
-            {/* Newsletter Section */}
-            <div className="bg-green-600 dark:bg-green-700">
-                <div className="container mx-auto px-4 py-8">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div className="text-center md:text-left">
-                            <h3 className="text-2xl font-bold text-white mb-2">
-                                Subscribe to our Newsletter
-                            </h3>
-                            <p className="text-green-100">
-                                Get the latest updates on new products and upcoming sales
-                            </p>
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-                            <input
-                                type="email"
-                                placeholder="Enter your email"
-                                className="flex-1 px-4 py-3 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-300"
-                            />
-                            <button className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium transition-colors duration-200 flex items-center justify-center">
-                                Subscribe
-                                <ArrowRight className="ml-2 w-4 h-4" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <footer className="bg-gray-700 dark:bg-black text-white transition-colors duration-300">
+
 
             {/* Main Footer Content */}
             <div className="container mx-auto px-4 py-12 lg:py-16">
