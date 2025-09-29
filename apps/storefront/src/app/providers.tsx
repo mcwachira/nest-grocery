@@ -1,5 +1,6 @@
 import {ThemeProvider} from "@/src/components/theme/ThemeProvider.tsx";
 import {Toaster} from "@/src/components/ui/sonner.tsx";
+import {CartProvider} from "@/src/contexts/CartContext.tsx";
 
 
 export async function AppProviders({
@@ -10,9 +11,13 @@ export async function AppProviders({
     return (
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 
-                {children}
+            <CartProvider>
 
-                <Toaster />
 
+            {children}
+
+            <Toaster/>
+            </CartProvider>
         </ThemeProvider>
     )
+}
