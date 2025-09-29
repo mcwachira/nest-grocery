@@ -1,6 +1,5 @@
-import { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
     typescript: {
         ignoreBuildErrors: true,
     },
@@ -11,7 +10,15 @@ const nextConfig: NextConfig = {
         remotePatterns: [
             {
                 protocol: "https",
-                hostname: "images.unsplash.com", // Allow images from all domains
+                hostname: "images.unsplash.com",
+            },
+            {
+                protocol: "https",
+                hostname: "via.placeholder.com",
+            },
+            {
+                protocol: "https",
+                hostname: "i.pravatar.cc", // you also used this in avatars
             },
         ],
     },

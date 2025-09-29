@@ -4,7 +4,7 @@ import {  Grid3X3, List, Filter} from 'lucide-react';
 import PromotionalBanner from "@/src/components/common/PromotionalBanner.tsx";
 import {bannerConfig} from "@/src/lib/bannerConfig.ts";
 import Sidebar from "@/src/components/common/Sidebar.tsx";
-import Pagination from "@/src/components/products/Pagination.tsx";
+import Pagination from "@/src/components/common/Pagination.tsx";
 import {allProducts, categories} from "@/src/lib/data.ts";
 import ProductsGrid from "@/src/components/products/ProductGrid";
 import Newsletter from "@/src/components/common/NewsLetter.tsx";

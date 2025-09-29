@@ -1,6 +1,7 @@
+"use client"
 import {ThemeProvider} from "@/src/components/theme/ThemeProvider.tsx";
 import {Toaster} from "@/src/components/ui/sonner.tsx";
-import {CartProvider} from "@/src/contexts/CartContext.tsx";
+import {CartProvider, useCart} from "@/src/contexts/CartContext.tsx";
 import CartPopup from "@/src/components/cart/CartPopup.tsx";
 import {WishlistProvider} from "@/src/contexts/WishlistContext.tsx";
 
