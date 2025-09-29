@@ -28,52 +28,125 @@
 //     { id: 10, name: 'Green Chili', price: 34.99, image: '../assets/products/green-chilli.png', rating: 4, inStock: true }
 // ];
 
-export const allProducts = [
-    // Vegetables
-    { id: 1, name: 'Red Chili', price: 14.99, image: '🌶️', rating: 4, category: 'Vegetables', inStock: true, sale: false },
-    { id: 2, name: 'Big Potatoes', price: 14.99, image: '🥔', rating: 5, category: 'Vegetables', inStock: true, sale: false },
-    { id: 3, name: 'Chinese Cabbage', price: 14.99, image: '🥬', rating: 4, category: 'Vegetables', inStock: true, sale: false, featured: true },
-    { id: 4, name: 'Ladies Finger', price: 14.99, originalPrice: 20.99, image: '🥒', rating: 4, category: 'Vegetables', inStock: true, sale: true },
-    { id: 5, name: 'Red Tomato', price: 14.99, image: '🍅', rating: 4, category: 'Vegetables', inStock: true, sale: false },
-    { id: 6, name: 'Eggplant', price: 14.99, image: '🍆', rating: 4, category: 'Vegetables', inStock: true, sale: false },
-    { id: 7, name: 'Fresh Cauliflower', price: 14.99, image: '🥦', rating: 4, category: 'Vegetables', inStock: true, sale: false },
-    { id: 8, name: 'Green Capsicum', price: 14.99, image: '🫑', rating: 4, category: 'Vegetables', inStock: true, sale: false },
-    { id: 9, name: 'Green Chili', price: 14.99, image: '🌶️', rating: 4, category: 'Vegetables', inStock: true, sale: false },
-    { id: 10, name: 'Green Cucumber', price: 14.99, originalPrice: 20.99, image: '🥒', rating: 4, category: 'Vegetables', inStock: true, sale: true },
-    { id: 11, name: 'Green Lettuce', price: 14.99, image: '🥬', rating: 4, category: 'Vegetables', inStock: true, sale: false },
-    { id: 12, name: 'Red Capsicum', price: 14.99, image: '🫑', rating: 4, category: 'Vegetables', inStock: true, sale: false },
+export const categories: Category[] = [
+    {
+        id: 1,
+        name: 'Fresh Fruit',
+        slug: 'fresh-fruit',
+        icon: '🍎',
+        productCount: 6,
+        image: '🍎',
+        description: 'Fresh and organic fruits delivered daily'
+    },
+    {
+        id: 2,
+        name: 'Vegetables',
+        slug: 'vegetables',
+        icon: '🥕',
+        productCount: 6,
+        image: '🥬',
+        description: 'Farm fresh vegetables, organic and healthy'
+    },
+    {
+        id: 3,
+        name: 'Meat & Fish',
+        slug: 'meat-fish',
+        icon: '🥩',
+        productCount: 2,
+        image: '🥩',
+        description: 'Premium quality meat and fresh seafood'
+    },
+    {
+        id: 4,
+        name: 'Beverages',
+        slug: 'beverages',
+        icon: '🥤',
+        productCount: 3,
+        image: '🧃',
+        description: 'Refreshing drinks and healthy beverages'
+    },
+    {
+        id: 5,
+        name: 'Bread & Bakery',
+        slug: 'bread-bakery',
+        icon: '🍞',
+        productCount: 2,
+        image: '🥐',
+        description: 'Freshly baked bread and pastries daily'
+    },
+    {
+        id: 6,
+        name: 'Snacks',
+        slug: 'snacks',
+        icon: '🍪',
+        productCount: 3,
+        image: '🍿',
+        description: 'Healthy and tasty snack options'
+    },
+    {
+        id: 7,
+        name: 'Dairy Products',
+        slug: 'dairy-products',
+        icon: '🥛',
+        productCount: 2,
+        image: '🧀',
+        description: 'Fresh milk, cheese, and dairy products'
+    },
+    {
+        id: 8,
+        name: 'Beauty & Health',
+        slug: 'beauty-health',
+        icon: '💊',
+        productCount: 2,
+        image: '💄',
+        description: 'Organic beauty and health products'
+    }
+];
 
-    // Fruits
-    { id: 13, name: 'Green Apple', price: 14.99, image: '🍏', rating: 4, category: 'Fresh Fruit', inStock: true, sale: true },
-    { id: 14, name: 'Fresh Mango', price: 14.99, image: '🥭', rating: 4, category: 'Fresh Fruit', inStock: true, sale: false },
-    { id: 15, name: 'Red Apple', price: 16.99, image: '🍎', rating: 5, category: 'Fresh Fruit', inStock: true, sale: false },
-    { id: 16, name: 'Orange', price: 12.99, image: '🍊', rating: 4, category: 'Fresh Fruit', inStock: true, sale: false },
-    { id: 17, name: 'Banana', price: 8.99, image: '🍌', rating: 4, category: 'Fresh Fruit', inStock: true, sale: false },
-    { id: 18, name: 'Grapes', price: 18.99, image: '🍇', rating: 5, category: 'Fresh Fruit', inStock: true, sale: false },
+export const allProducts: Product[] = [
+    // Fresh Fruit
+    { id: 1, name: 'Green Apple', price: 14.99, originalPrice: 20.99, image: '🍏', rating: 4, category: 'Fresh Fruit', categorySlug: 'fresh-fruit', inStock: true, sale: true },
+    { id: 2, name: 'Red Apple', price: 16.99, image: '🍎', rating: 5, category: 'Fresh Fruit', categorySlug: 'fresh-fruit', inStock: true },
+    { id: 3, name: 'Orange', price: 12.99, image: '🍊', rating: 4, category: 'Fresh Fruit', categorySlug: 'fresh-fruit', inStock: true },
+    { id: 4, name: 'Banana', price: 8.99, image: '🍌', rating: 4, category: 'Fresh Fruit', categorySlug: 'fresh-fruit', inStock: true },
+    { id: 5, name: 'Mango', price: 18.99, image: '🥭', rating: 5, category: 'Fresh Fruit', categorySlug: 'fresh-fruit', inStock: true },
+    { id: 6, name: 'Grapes', price: 22.99, image: '🍇', rating: 5, category: 'Fresh Fruit', categorySlug: 'fresh-fruit', inStock: true },
+
+    // Vegetables
+    { id: 7, name: 'Chinese Cabbage', price: 14.99, image: '🥬', rating: 4, category: 'Vegetables', categorySlug: 'vegetables', inStock: true },
+    { id: 8, name: 'Red Tomato', price: 14.99, image: '🍅', rating: 4, category: 'Vegetables', categorySlug: 'vegetables', inStock: true },
+    { id: 9, name: 'Green Capsicum', price: 14.99, image: '🫑', rating: 4, category: 'Vegetables', categorySlug: 'vegetables', inStock: true },
+    { id: 10, name: 'Eggplant', price: 14.99, image: '🍆', rating: 4, category: 'Vegetables', categorySlug: 'vegetables', inStock: true },
+    { id: 11, name: 'Cauliflower', price: 14.99, image: '🥦', rating: 4, category: 'Vegetables', categorySlug: 'vegetables', inStock: true },
+    { id: 12, name: 'Green Chili', price: 14.99, originalPrice: 20.99, image: '🌶️', rating: 4, category: 'Vegetables', categorySlug: 'vegetables', inStock: true, sale: true },
 
     // Beverages
-    { id: 19, name: 'Orange Juice', price: 5.99, image: '🧃', rating: 4, category: 'Beverages', inStock: true, sale: false },
-    { id: 20, name: 'Apple Juice', price: 5.99, image: '🧃', rating: 4, category: 'Beverages', inStock: true, sale: false },
-    { id: 21, name: 'Water Bottle', price: 2.99, image: '🚰', rating: 5, category: 'Beverages', inStock: true, sale: false },
+    { id: 13, name: 'Orange Juice', price: 5.99, image: '🧃', rating: 4, category: 'Beverages', categorySlug: 'beverages', inStock: true },
+    { id: 14, name: 'Apple Juice', price: 5.99, image: '🧃', rating: 4, category: 'Beverages', categorySlug: 'beverages', inStock: true },
+    { id: 15, name: 'Water Bottle', price: 2.99, image: '💧', rating: 5, category: 'Beverages', categorySlug: 'beverages', inStock: true },
 
     // Snacks
-    { id: 22, name: 'Potato Chips', price: 3.99, image: '🍟', rating: 4, category: 'Snacks', inStock: true, sale: false },
-    { id: 23, name: 'Cookies', price: 4.99, image: '🍪', rating: 4, category: 'Snacks', inStock: true, sale: true },
+    { id: 16, name: 'Potato Chips', price: 3.99, image: '🍟', rating: 4, category: 'Snacks', categorySlug: 'snacks', inStock: true },
+    { id: 17, name: 'Cookies', price: 4.99, originalPrice: 7.99, image: '🍪', rating: 4, category: 'Snacks', categorySlug: 'snacks', inStock: true, sale: true },
+    { id: 18, name: 'Popcorn', price: 3.49, image: '🍿', rating: 4, category: 'Snacks', categorySlug: 'snacks', inStock: true },
 
     // Bread & Bakery
-    { id: 24, name: 'White Bread', price: 2.99, image: '🍞', rating: 4, category: 'Bread & Bakery', inStock: true, sale: false },
-    { id: 25, name: 'Croissant', price: 1.99, image: '🥐', rating: 4, category: 'Bread & Bakery', inStock: true, sale: false }
+    { id: 19, name: 'White Bread', price: 2.99, image: '🍞', rating: 4, category: 'Bread & Bakery', categorySlug: 'bread-bakery', inStock: true },
+    { id: 20, name: 'Croissant', price: 1.99, image: '🥐', rating: 4, category: 'Bread & Bakery', categorySlug: 'bread-bakery', inStock: true },
+
+    // Dairy Products
+    { id: 21, name: 'Fresh Milk', price: 4.99, image: '🥛', rating: 5, category: 'Dairy Products', categorySlug: 'dairy-products', inStock: true },
+    { id: 22, name: 'Cheese', price: 8.99, image: '🧀', rating: 5, category: 'Dairy Products', categorySlug: 'dairy-products', inStock: true },
+
+    // Meat & Fish
+    { id: 23, name: 'Chicken Breast', price: 12.99, image: '🍗', rating: 4, category: 'Meat & Fish', categorySlug: 'meat-fish', inStock: true },
+    { id: 24, name: 'Fresh Fish', price: 18.99, image: '🐟', rating: 5, category: 'Meat & Fish', categorySlug: 'meat-fish', inStock: true },
+
+    // Beauty & Health
+    { id: 25, name: 'Organic Lotion', price: 15.99, image: '🧴', rating: 4, category: 'Beauty & Health', categorySlug: 'beauty-health', inStock: true },
+    { id: 26, name: 'Vitamins', price: 24.99, image: '💊', rating: 5, category: 'Beauty & Health', categorySlug: 'beauty-health', inStock: true }
 ];
 
-// Categories with counts
-export const categories = [
-    { name: 'All Products', count: allProducts.length, active: false },
-    { name: 'Fresh Fruit', count: allProducts.filter(p => p.category === 'Fresh Fruit').length, active: false },
-    { name: 'Vegetables', count: allProducts.filter(p => p.category === 'Vegetables').length, active: false },
-    { name: 'Beverages', count: allProducts.filter(p => p.category === 'Beverages').length, active: false },
-    { name: 'Snacks', count: allProducts.filter(p => p.category === 'Snacks').length, active: false },
-    { name: 'Bread & Bakery', count: allProducts.filter(p => p.category === 'Bread & Bakery').length, active: false }
-];
 
 export const tags = ['Healthy', 'Low fat', 'Vegetarian', 'Kid foods', 'Vitamins', 'Bread', 'Meat', 'Snacks', 'Tiffin', 'Launch', 'Dinner', 'BreadFast', 'Fruit'];
 
