@@ -5,7 +5,7 @@ import PopularCategories from "@/src/components/home/PopularCategories.tsx";
 import PopularProducts from "@/src/components/home/PopularProducts.tsx";
 import PromotionalBanners from "@/src/components/home/PromotionalBanners.tsx";
 import HotDeals from "@/src/components/home/HotDeals.tsx";
-import NewsLetter from "@/src/components/home/NewsLetter.tsx";
+import NewsLetter from "@/src/components/common/NewsLetter.tsx";
 import Testimonials from "@/src/components/home/Testimonials.tsx";
 import LatestNews from "@/src/components/home/LatestNews.tsx";
 
@@ -25,9 +25,10 @@ export default function Store() {
             <PopularProducts/>
             <PromotionalBanners/>
             <HotDeals/>
-            <NewsLetter/>
+
             <Testimonials/>
             <LatestNews/>
+            <NewsLetter/>
         </div>
   );
 }
