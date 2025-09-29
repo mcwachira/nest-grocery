@@ -1,13 +1,27 @@
-import {useState} from "react";
-import {ChevronDown, Star, X} from "lucide-react";
-import {categories, saleProducts, tags} from "@/src/lib/data.ts";
+"use client"
+import { useState } from "react";
+import { ChevronDown, Star, X } from "lucide-react";
+import { categories, saleProducts, tags } from "@/src/lib/data";
+import { Category } from "@/src/lib/types";
 
+interface SidebarProps {
+    isMobile?: boolean;
+    onClose?: () => void;
+    selectedCategory: Category;
+    onCategoryChange: (category: Category) => void;
+}
 
-const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
+interface ExpandedSections {
+    categories: boolean;
+    price: boolean;
+    rating: boolean;
+    tags: boolean;
+    sale: boolean;
+}
 
-    const [priceRange, setPriceRange] = useState([50, 100])
-    const [selectedRating, setSelectedRating] = useState(null);
-    const [expandedSections, setExpandedSections] = useState({
+const Sidebar = ({ isMobile = false, onClose, selectedCategory, onCategoryChange }: SidebarProps) => {
+    const [selectedRating, setSelectedRating] = useState<number | null>(null);
+    const [expandedSections, setExpandedSections] = useState<ExpandedSections>({
         categories: true,
         price: true,
         rating: true,
@@ -15,18 +29,15 @@ const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
         sale: true
     });
 
-    const toggleSection = (section) => {
+    const toggleSection = (section: keyof ExpandedSections) => {
         setExpandedSections((prev) => ({
             ...prev,
             [section]: !prev[section],
-        }) )
-    }
+        }));
+    };
 
     const sidebarContent = (
-
         <div className="space-y-6">
-        {/* Filter Button for Mobile */}
-
             {isMobile && (
                 <div className="flex items-center justify-between p-4 border-b border-border">
                     <h2 className="text-lg font-semibold">Filters</h2>
@@ -36,21 +47,21 @@ const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
                 </div>
             )}
 
-        {/* All Categories */}
-
-            <div className="bg-=card rounded-lg p-6">
+            <div className="bg-card rounded-lg p-6">
                 <button
                     onClick={() => toggleSection('categories')}
                     className="flex items-center justify-between w-full mb-4"
                 >
                     <h3 className="text-lg font-semibold">All Categories</h3>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.categories ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                        className={`w-4 h-4 transition-transform ${expandedSections.categories ? 'rotate-180' : ''}`}
+                    />
                 </button>
 
                 {expandedSections.categories && (
                     <ul className="space-y-2">
-                        {categories.map((category, index) => (
-                            <li key={index}>
+                        {categories.map((category) => (
+                            <li key={category.name}>
                                 <button
                                     onClick={() => onCategoryChange(category.name)}
                                     className={`flex items-center justify-between py-2 px-3 rounded-lg transition-colors w-full text-left ${
@@ -64,12 +75,9 @@ const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
                                 </button>
                             </li>
                         ))}
-
                     </ul>
                 )}
             </div>
-
-        {/* Price Filter */}
 
             <div className="bg-card rounded-lg p-6">
                 <button
@@ -77,17 +85,19 @@ const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
                     className="flex items-center justify-between w-full mb-4"
                 >
                     <h3 className="text-lg font-semibold">Price</h3>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.price ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                        className={`w-4 h-4 transition-transform ${expandedSections.price ? 'rotate-180' : ''}`}
+                    />
                 </button>
 
-                {expandedSections.price&& (
+                {expandedSections.price && (
                     <div className="space-y-4">
                         <div className="relative">
                             <div className="h-2 bg-muted rounded-full">
                                 <div
                                     className="h-full bg-primary rounded-full"
                                     style={{ width: '60%' }}
-                                ></div>
+                                />
                             </div>
                             <div className="flex justify-between mt-2 text-sm text-muted-foreground">
                                 <span>Price: $0 – $50</span>
@@ -97,14 +107,15 @@ const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
                 )}
             </div>
 
-            {/* Rating Filter */}
             <div className="bg-card rounded-lg p-6">
                 <button
                     onClick={() => toggleSection('rating')}
                     className="flex items-center justify-between w-full mb-4"
                 >
                     <h3 className="text-lg font-semibold">Rating</h3>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.rating ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                        className={`w-4 h-4 transition-transform ${expandedSections.rating ? 'rotate-180' : ''}`}
+                    />
                 </button>
 
                 {expandedSections.rating && (
@@ -131,8 +142,8 @@ const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
                                         ))}
                                     </div>
                                     <span className="text-sm text-muted-foreground">
-                    {rating}.0 & up
-                  </span>
+                                        {rating}.0 & up
+                                    </span>
                                 </div>
                             </label>
                         ))}
@@ -140,22 +151,22 @@ const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
                 )}
             </div>
 
-
-            {/* Popular Tags */}
             <div className="bg-card rounded-lg p-6">
                 <button
                     onClick={() => toggleSection('tags')}
                     className="flex items-center justify-between w-full mb-4"
                 >
                     <h3 className="text-lg font-semibold">Popular Tag</h3>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.tags ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                        className={`w-4 h-4 transition-transform ${expandedSections.tags ? 'rotate-180' : ''}`}
+                    />
                 </button>
 
                 {expandedSections.tags && (
                     <div className="flex flex-wrap gap-2">
-                        {tags.map((tag, index) => (
+                        {tags.map((tag) => (
                             <button
-                                key={index}
+                                key={tag}
                                 className={`px-3 py-1 text-sm rounded-full border transition-colors ${
                                     tag === 'Vegetarian'
                                         ? 'bg-primary text-primary-foreground border-primary'
@@ -169,7 +180,6 @@ const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
                 )}
             </div>
 
-            {/* Discount Banner */}
             <div className="bg-gradient-to-br from-orange-400 to-red-500 text-white p-6 rounded-lg relative overflow-hidden">
                 <div className="absolute right-4 top-4 text-4xl opacity-30">🥕</div>
                 <div className="relative z-10">
@@ -181,7 +191,6 @@ const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
                 </div>
             </div>
 
-            {/* Sale Products */}
             {saleProducts.length > 0 && (
                 <div className="bg-card rounded-lg p-6">
                     <button
@@ -189,13 +198,15 @@ const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
                         className="flex items-center justify-between w-full mb-4"
                     >
                         <h3 className="text-lg font-semibold">Sale Products</h3>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.sale ? 'rotate-180' : ''}`} />
+                        <ChevronDown
+                            className={`w-4 h-4 transition-transform ${expandedSections.sale ? 'rotate-180' : ''}`}
+                        />
                     </button>
 
                     {expandedSections.sale && (
                         <div className="space-y-4">
-                            {saleProducts.map((product, index) => (
-                                <div key={index} className="flex items-center space-x-3 p-3 border border-border rounded-lg">
+                            {saleProducts.map((product) => (
+                                <div key={product.id} className="flex items-center space-x-3 p-3 border border-border rounded-lg">
                                     <div className="text-3xl">{product.image}</div>
                                     <div className="flex-1">
                                         <h4 className="text-sm font-medium text-foreground">{product.name}</h4>
@@ -224,6 +235,7 @@ const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
             )}
         </div>
     );
+
     if (isMobile) {
         return (
             <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
@@ -240,4 +252,5 @@ const Sidebar = ({ isMobile, onClose, selectedCategory, onCategoryChange }) => {
         </div>
     );
 };
-export default Sidebar
+
+export default Sidebar;
