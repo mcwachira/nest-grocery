@@ -18,7 +18,7 @@ export default function Store() {
   log("Hey! This is the Store page.");
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white dark:bg-gray-900">
             <Hero />
             <FeaturesSection/>
             <PopularCategories />
