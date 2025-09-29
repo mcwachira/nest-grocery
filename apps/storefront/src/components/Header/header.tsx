@@ -7,6 +7,10 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import {ThemeToggle} from "@/src/components/theme/ThemeToggle.tsx";
 
+interface Category {
+    name: string;
+    icon: string;
+}
 const Header = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -14,7 +18,7 @@ const Header = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const sidebarRef = useRef(null);
 
-    const categories = [
+    const categories:Category[] = [
         { name: 'Fresh Fruit', icon: '🍎' },
         { name: 'Vegetables', icon: '🥕' },
         { name: 'River Fish', icon: '🐟' },
@@ -27,14 +31,14 @@ const Header = () => {
         { name: 'View all Category', icon: '📋' }
     ];
 
-    const handleSearch = (e) => {
+    const handleSearch = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log('Searching for:', searchQuery);
     };
 
     // Close sidebar when clicking outside
     useEffect(() => {
-        const handleClickOutside = (event) => {
+        const handleClickOutside = (event:MouseEvent) => {
             if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
                 setIsSidebarOpen(false);
             }
