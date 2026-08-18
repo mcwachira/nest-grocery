@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // Required for apps/storefront/Dockerfile's "runner" stage: this makes
+    // Next.js emit a minimal self-contained server into .next/standalone,
+    // which is the only thing copied into the production image.
+    output: "standalone",
+
     typescript: {
         ignoreBuildErrors: true,
     },
@@ -23,5 +28,4 @@ const nextConfig = {
         ],
     },
 };
-
 export default nextConfig;

@@ -1,3 +1,7 @@
+# .github/workflows/ci.yml
+# Runs on every PR and push to main: lint, typecheck, test, build.
+# Also does a "does it even build" Docker sanity check on PRs (no push).
+
 name: CI
 
 on:
@@ -5,6 +9,7 @@ on:
   push:
     branches: [main]
 
+# Cancel older runs on the same branch when new commits land
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -12,13 +17,14 @@ concurrency:
 jobs:
   lint-typecheck-test:
     runs-on: ubuntu-latest
+    # Spin up real Postgres + Redis for integration tests
     services:
       postgres:
         image: postgres:16-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: ecommerce_test
+          POSTGRES_DB: nest_grocery_test
         ports: ["5432:5432"]
         options: >-
           --health-cmd "pg_isready -U postgres"
@@ -37,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 2 # turbo uses git history to figure out what changed
 
       - uses: pnpm/action-setup@v4
         with:
@@ -51,14 +57,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Cache turbo
+      - name: Cache turbo build outputs
         uses: actions/cache@v4
         with:
           path: .turbo
           key: turbo-${{ github.job }}-${{ github.sha }}
           restore-keys: turbo-${{ github.job }}-
 
-      # Optional: set TURBO_TOKEN / TURBO_TEAM secrets to enable Vercel remote caching
+      # Add TURBO_TOKEN / TURBO_TEAM repo secrets to enable Vercel remote
+      # caching across CI runs (optional, speeds up CI significantly)
       - name: Lint
         run: pnpm turbo run lint
 
@@ -68,7 +75,7 @@ jobs:
       - name: Test
         run: pnpm turbo run test
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ecommerce_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/nest_grocery_test
           REDIS_URL: redis://localhost:6379
 
       - name: Build
@@ -86,7 +93,7 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
 
-      - name: Build ${{ matrix.app }} image (no push, sanity check only)
+      - name: Build ${{ matrix.app }} image (sanity check, no push)
         uses: docker/build-push-action@v6
         with:
           context: .
