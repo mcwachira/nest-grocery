@@ -8,7 +8,7 @@
 # syntax=docker/dockerfile:1
 
 FROM node:24-alpine AS base
-RUN npm install -g turbo pnpm@9
+RUN npm install -g turbo pnpm@8.15.6
 WORKDIR /app
 
 # -----------------------------------------------------------------------
