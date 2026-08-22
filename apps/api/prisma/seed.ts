@@ -26,6 +26,7 @@
 
 import {
   PrismaClient,
+  Prisma,
   Role,
   ProductStatus,
   OrderStatus,
@@ -347,7 +348,11 @@ async function seedUsers() {
     },
   ];
 
-  const customers = [];
+  // Explicit type needed here — otherwise TS infers `never[]` from the
+  // empty array literal, and every later `customers.push(...)` /
+  // `customer.address` / `customer.id` access fails to compile.
+  const customers: Prisma.UserGetPayload<{ include: { address: true } }>[] =
+    [];
   for (const c of customerSeeds) {
     const passwordHash = await hash('Customer@12345');
     const user = await prisma.user.create({
@@ -521,11 +526,15 @@ async function seedOrders(
       ); // stagger dates
 
       const isPaid = plan.status !== OrderStatus.PENDING_PAYMENT;
-      const isFulfilled = [
+      // Explicit OrderStatus[] type — otherwise TS narrows the array
+      // literal to a 3-member literal union that .includes(plan.status)
+      // (typed as the full OrderStatus enum) can't be checked against.
+      const fulfilledStatuses: OrderStatus[] = [
         OrderStatus.FULFILLED,
         OrderStatus.OUT_FOR_DELIVERY,
         OrderStatus.DELIVERED,
-      ].includes(plan.status);
+      ];
+      const isFulfilled = fulfilledStatuses.includes(plan.status);
       const isDelivered = plan.status === OrderStatus.DELIVERED;
 
       await prisma.order.create({
@@ -601,20 +610,9 @@ main()
 
 /**
  * ---------------------------------------------------------------------------
- * package.json wiring
- * ---------------------------------------------------------------------------
- * Add this so `npx prisma db seed` (and `prisma migrate reset`) know how to
- * run the script:
- *
- *   {
- *     "prisma": {
- *       "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
- *     }
- *   }
- *
- * If your project already runs ts-node with a tsconfig that targets ESM,
- * adjust the compiler-options flag accordingly, or use `ts-node-dev` /
- * `tsx prisma/seed.ts` instead — whichever your NestJS project already uses
- * for standalone scripts.
+ * package.json wiring — already done (see "prisma.seed" in package.json,
+ * using `tsx` — already a devDependency here — rather than ts-node, since
+ * tsx needs no extra compiler-options flag to run a plain CommonJS-ish
+ * script under this project's `"module": "nodenext"` tsconfig).
  * ---------------------------------------------------------------------------
  */
