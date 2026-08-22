@@ -1,0 +1,231 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  // "prisma-client-js" (not the newer "prisma-client" generator) — the
+  // newer generator's output is ESM-only (uses import.meta.url), which
+  // crashes NestJS's CommonJS build/runtime at startup
+  // ("ReferenceError: exports is not defined in ES module scope").
+  // prisma-client-js is the standard, well-supported generator for a
+  // NestJS app.
+  provider = "prisma-client-js"
+}
+
+// Prisma 7 removed `url = env("DATABASE_URL")` from the datasource block
+// entirely (schema validation error P1012) — the connection string is now
+// supplied two different ways for two different purposes:
+//   - the Prisma CLI (migrate/studio) reads it from prisma.config.ts
+//   - the application's own PrismaClient reads it via a driver adapter,
+//     wired in src/prisma/prisma.service.ts
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PROCESSING
+  FULFILLED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentProvider {
+  CARD
+  MPESA
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  passwordHash    String
+  firstName       String
+  lastName        String
+  phone           String?
+  role            Role      @default(CUSTOMER)
+  emailVerifiedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  address      Address[]
+  refreshToken RefreshToken[]
+  resetToken   PasswordResetToken[]
+  orders       Order[]
+
+  @@map("users")
+}
+
+model Address {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label      String?
+  line1      String
+  line2      String?
+  city       String
+  region     String
+  postalCode String?
+  country    String   @default("KE")
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+  @@map("addresses")
+}
+
+model RefreshToken {
+  id                String    @id @default(uuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash         String    @unique
+  expiresAt         DateTime
+  revokedAt         DateTime?
+  replacedByTokenId String?
+  createdAt         DateTime  @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model Category {
+  id          String     @id @default(uuid())
+  name        String
+  slug        String     @unique
+  parentId    String?
+  // self-relation: adjacency list, not nested-set — see 00-database-design.md
+  parent      Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[] @relation("CategoryToCategory")
+  description String?
+  imageUrl    String?
+  sortOrder   Int        @default(0)
+  products    Product[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([parentId])
+  @@map("categories")
+}
+
+model Product {
+  id                  String         @id @default(uuid())
+  name                String
+  slug                String         @unique
+  description         String
+  priceCents          Int
+  compareAtPriceCents Int?
+  currency            String         @default("KES")
+  unit                String
+  stock               Int            @default(0)
+  sku                 String?        @unique
+  isOrganic           Boolean        @default(false)
+  status              ProductStatus  @default(DRAFT)
+  categoryId          String
+  category            Category       @relation(fields: [categoryId], references: [id])
+  images              ProductImage[]
+  orderItems          OrderItem[]
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  @@index([categoryId])
+  @@index([status])
+  @@map("products")
+}
+
+model ProductImage {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  altText   String?
+  sortOrder Int     @default(0)
+
+  @@index([productId])
+  @@map("product_images")
+}
+model Order {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  status           OrderStatus @default(PENDING_PAYMENT)
+  totalCents       Int
+  deliveryFeeCents Int
+  currency         String      @default("KES")
+
+  // Shipping address SNAPSHOT — intentionally not a foreign key.
+  // If the user edits/deletes the Address row later, this order must
+  // still show exactly what was shipped where at the time. See
+  // 00-database-design.md "Conventions".
+  shippingLine1      String
+  shippingLine2      String?
+  shippingCity       String
+  shippingRegion     String
+  shippingPostalCode String?
+  shippingCountry    String
+
+  paymentProvider  PaymentProvider
+  // Provider-side charge/transaction reference (e.g. a card processor's
+  // payment intent id, or an M-Pesa transaction code). @unique so a
+  // payment webhook can look an order up by this field directly.
+  paymentReference String? @unique
+
+  placedAt    DateTime  @default(now())
+  paidAt      DateTime?
+  fulfilledAt DateTime?
+  deliveredAt DateTime?
+  cancelledAt DateTime?
+
+  items     OrderItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id      String @id @default(uuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  // Snapshot at time of order — never re-read from Product for display.
+  productName    String
+  unitPriceCents Int
+  quantity       Int
+  subtotalCents  Int
+
+  @@index([orderId])
+  @@map("order_items")
+}
