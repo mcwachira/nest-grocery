@@ -7,8 +7,14 @@ dist
 dist-ssr
 *.local
 .env
+.env*
 .cache
 server/dist
 public/dist
 .idea
 .idea/*
+
+.agents/
+.claude/
+.windsurf/
+.pnpm-store/
