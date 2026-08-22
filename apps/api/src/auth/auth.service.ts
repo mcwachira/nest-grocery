@@ -150,8 +150,6 @@ export class AuthService {
           expiresAt,
         },
       });
-      // Stub until the mailer from 05-checkout-and-payments.md exists.
-      // Log the raw token so you can copy it into reset-password during
       // local testing — this line must not survive to production.
       console.log(
         `[dev-only] password reset link: /reset-password?token=${rawToken}`,
