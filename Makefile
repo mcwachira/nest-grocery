@@ -9,6 +9,7 @@
         prod-up prod-down prod-logs prod-pull prod-restart \
         shell-api shell-storefront shell-admin shell-blog \
         db-shell redis-cli \
+        prisma-generate \
         docker-build-api docker-build-storefront docker-build-admin docker-build-blog docker-build-all \
         clean prune
 
@@ -49,6 +50,17 @@ logs: ## Tail logs from every local service
 
 ps: ## Show status of local containers
 	docker compose -f docker-local.yml ps
+
+build-images: ## Rebuild all local dev images and recreate containers with fresh node_modules volumes
+	docker compose -f docker-local.yml build
+	docker compose -f docker-local.yml up -d --force-recreate --renew-anon-volumes
+
+# ---------------------------------------------------------------------------
+# Prisma (run inside the running api container, against docker-local.yml)
+# ---------------------------------------------------------------------------
+
+prisma-generate: ## Regenerate the Prisma client after schema.prisma changes
+	docker compose -f docker-local.yml exec --workdir /app/apps/api api npx prisma generate
 
 # ---------------------------------------------------------------------------
 # Turbo tasks (run on host, not in containers — fast, uses local pnpm)
