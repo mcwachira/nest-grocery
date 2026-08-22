@@ -1,4 +1,4 @@
-import { log } from "@repo/logger";
+
 import Hero from "@/src/components/home/Hero.tsx";
 import FeaturesSection from "@/src/components/home/FeaturesSection.tsx";
 import PopularCategories from "@/src/components/home/PopularCategories.tsx";
@@ -15,7 +15,7 @@ export const metadata = {
 };
 
 export default function Store() {
-  log("Hey! This is the Store page.");
+  // log("Hey! This is the Store page.");
 
     return (
         <div className="min-h-screen bg-white dark:bg-gray-900">

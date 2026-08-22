@@ -13,3 +13,8 @@ server/dist
 public/dist
 .idea
 .idea/*
+
+.agents/
+.claude/
+.windsurf/
+.pnpm-store/
