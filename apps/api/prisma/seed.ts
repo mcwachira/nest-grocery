@@ -31,7 +31,6 @@ import {
   ProductStatus,
   OrderStatus,
   PaymentProvider,
-  PaymentStatus,
 } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
@@ -550,24 +549,15 @@ async function seedOrders(
           shippingRegion: address.region,
           shippingPostalCode: address.postalCode,
           shippingCountry: address.country,
+          paymentProvider: plan.provider,
+          paymentReference: isPaid
+            ? `${plan.provider}-${customer.id.slice(0, 8)}-${i}`
+            : null,
           placedAt,
           paidAt: isPaid ? placedAt : null,
           fulfilledAt: isFulfilled ? placedAt : null,
           deliveredAt: isDelivered ? placedAt : null,
           items: { create: items },
-          // Payment is its own row now, not inline Order fields — see
-          // the Payment model (docs/modules/payments.md). One row per
-          // attempt; seed data only ever has one attempt each.
-          payments: {
-            create: {
-              provider: plan.provider,
-              status: isPaid ? PaymentStatus.SUCCEEDED : PaymentStatus.PENDING,
-              amountCents: totalCents,
-              providerReference: isPaid
-                ? `${plan.provider}-${customer.id.slice(0, 8)}-${i}`
-                : null,
-            },
-          },
         },
       });
     }
