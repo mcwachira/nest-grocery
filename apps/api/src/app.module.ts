@@ -6,6 +6,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ProductsModule } from './products/products.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     }),
     PrismaModule,
     AuthModule,
+    ProductsModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [
