@@ -23,13 +23,30 @@ datasource db {
   provider = "postgresql"
 }
 
-// ---------------------------------------------------------------------
-// Auth domain — see docs/modules/auth.md
-// ---------------------------------------------------------------------
-
 enum Role {
   CUSTOMER
   ADMIN
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PROCESSING
+  FULFILLED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentProvider {
+  CARD
+  MPESA
 }
 
 model User {
@@ -44,14 +61,10 @@ model User {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  address           Address[]
-  refreshToken      RefreshToken[]
-  resetToken        PasswordResetToken[]
-  orders            Order[]
-  reviews           Review[]
-  wishlistItems     WishlistItem[]
-  notifications     Notification[]
-  couponRedemptions CouponRedemption[]
+  address      Address[]
+  refreshToken RefreshToken[]
+  resetToken   PasswordResetToken[]
+  orders       Order[]
 
   @@map("users")
 }
@@ -102,16 +115,6 @@ model PasswordResetToken {
   @@map("password_reset_tokens")
 }
 
-// ---------------------------------------------------------------------
-// Catalog domain — see docs/modules/products.md, categories.md
-// ---------------------------------------------------------------------
-
-enum ProductStatus {
-  DRAFT
-  ACTIVE
-  ARCHIVED
-}
-
 model Category {
   id          String     @id @default(uuid())
   name        String
@@ -141,14 +144,6 @@ model Product {
   currency            String         @default("KES")
   unit                String
   stock               Int            @default(0)
-  // Units currently held by PENDING_PAYMENT orders — not yet a confirmed
-  // sale, not yet released back to the public. `available = stock -
-  // reserved`, computed in application code, never persisted. See
-  // docs/database/concurrency.md and docs/architecture/inventory-flow.md
-  // for why this exists: a bare `stock` decrement at checkout time (the
-  // original design) has no way to give stock back when an async payment
-  // (M-Pesa STK Push, card 3-D Secure) is abandoned or times out.
-  reserved            Int            @default(0)
   sku                 String?        @unique
   isOrganic           Boolean        @default(false)
   status              ProductStatus  @default(DRAFT)
@@ -156,19 +151,8 @@ model Product {
   category            Category       @relation(fields: [categoryId], references: [id])
   images              ProductImage[]
   orderItems          OrderItem[]
-  reviews             Review[]
-  wishlistItems       WishlistItem[]
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
-
-  // Full-text search column — Prisma can't model tsvector natively, so
-  // it's declared `Unsupported` and excluded from the generated client's
-  // types entirely. Populated and kept in sync by a Postgres trigger
-  // (see the add_product_search_vector migration), queried with
-  // `$queryRaw` — see docs/modules/search.md. This is the formalization
-  // of what the original products doc already flagged as the next step
-  // once `ILIKE '%term%'` stops scaling.
-  searchVector Unsupported("tsvector")?
 
   @@index([categoryId])
   @@index([status])
@@ -186,21 +170,6 @@ model ProductImage {
   @@index([productId])
   @@map("product_images")
 }
-
-// ---------------------------------------------------------------------
-// Orders domain — see docs/modules/checkout.md, orders.md
-// ---------------------------------------------------------------------
-
-enum OrderStatus {
-  PENDING_PAYMENT
-  PAID
-  PROCESSING
-  FULFILLED
-  OUT_FOR_DELIVERY
-  DELIVERED
-  CANCELLED
-}
-
 model Order {
   id     String @id @default(uuid())
   userId String
@@ -210,14 +179,6 @@ model Order {
   totalCents       Int
   deliveryFeeCents Int
   currency         String      @default("KES")
-
-  // Coupon snapshot — never a live join to Coupon. A coupon's value or
-  // active state can change (or the coupon can be deleted) after it was
-  // applied; the order must keep showing exactly what discount the
-  // customer actually received. See 00-database-design.md "Conventions"
-  // and docs/modules/coupons.md.
-  couponCode    String?
-  discountCents Int     @default(0)
 
   // Shipping address SNAPSHOT — intentionally not a foreign key.
   // If the user edits/deletes the Address row later, this order must
@@ -230,8 +191,11 @@ model Order {
   shippingPostalCode String?
   shippingCountry    String
 
-  payments         Payment[]
-  couponRedemption CouponRedemption?
+  paymentProvider  PaymentProvider
+  // Provider-side charge/transaction reference (e.g. a card processor's
+  // payment intent id, or an M-Pesa transaction code). @unique so a
+  // payment webhook can look an order up by this field directly.
+  paymentReference String? @unique
 
   placedAt    DateTime  @default(now())
   paidAt      DateTime?
@@ -242,7 +206,6 @@ model Order {
   items     OrderItem[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
-  reviews   Review[]
 
   @@index([userId])
   @@index([status])
@@ -265,217 +228,4 @@ model OrderItem {
 
   @@index([orderId])
   @@map("order_items")
-}
-
-// ---------------------------------------------------------------------
-// Payments domain — see docs/modules/payments.md, business-logic/payments.md
-// ---------------------------------------------------------------------
-
-enum PaymentProvider {
-  CARD
-  MPESA
-}
-
-enum PaymentStatus {
-  PENDING
-  SUCCEEDED
-  FAILED
-  REFUNDED
-  PARTIALLY_REFUNDED
-}
-
-// One row per payment ATTEMPT, not per order — an order can have a failed
-// M-Pesa attempt (customer cancelled the STK Push prompt) followed by a
-// successful retry with a different phone number. Decoupling this from
-// Order (rather than the old Order.paymentReference field) is what makes
-// that retry representable at all. See docs/modules/payments.md.
-model Payment {
-  id          String          @id @default(uuid())
-  orderId     String
-  order       Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  provider    PaymentProvider
-  status      PaymentStatus   @default(PENDING)
-  amountCents Int
-
-  // CARD: the processor's payment-intent id. MPESA: the CheckoutRequestID
-  // returned synchronously by the STK Push initiate call, later matched
-  // against the callback to know which Payment a webhook belongs to.
-  providerReference String? @unique
-
-  // The raw webhook/callback body, stored verbatim for audit and
-  // debugging — provider dashboards don't always keep this around as
-  // long as you'll want it, and a support ticket six months from now
-  // ("the customer says they paid but the order shows unpaid") is much
-  // faster to resolve with the original payload in hand than without it.
-  rawCallback Json?
-
-  refunds   Refund[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([orderId])
-  @@map("payments")
-}
-
-enum RefundStatus {
-  PENDING
-  SUCCEEDED
-  FAILED
-}
-
-model Refund {
-  id                      String       @id @default(uuid())
-  paymentId               String
-  payment                 Payment      @relation(fields: [paymentId], references: [id], onDelete: Cascade)
-  amountCents             Int
-  reason                  String?
-  status                  RefundStatus @default(PENDING)
-  providerRefundReference String?
-  createdAt               DateTime     @default(now())
-  updatedAt               DateTime     @updatedAt
-
-  @@index([paymentId])
-  @@map("refunds")
-}
-
-// ---------------------------------------------------------------------
-// Coupons domain — see docs/modules/coupons.md
-// ---------------------------------------------------------------------
-
-enum CouponType {
-  PERCENTAGE
-  FIXED_AMOUNT
-}
-
-model Coupon {
-  id    String     @id @default(uuid())
-  // Always stored/compared uppercase — see docs/modules/coupons.md.
-  code  String     @unique
-  type  CouponType
-  // PERCENTAGE: 1-100. FIXED_AMOUNT: cents. Validated in the DTO, not
-  // the database — see docs/api/coupons.md.
-  value Int
-
-  minOrderCents     Int?
-  // Caps a PERCENTAGE coupon's absolute discount (e.g. "20% off, up to
-  // KES 500") — without this, a percentage coupon on a very large order
-  // has no ceiling.
-  maxDiscountCents  Int?
-  usageLimit        Int?
-  usageLimitPerUser Int?      @default(1)
-  startsAt          DateTime?
-  expiresAt         DateTime?
-  isActive          Boolean   @default(true)
-
-  redemptions CouponRedemption[]
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-
-  @@map("coupons")
-}
-
-// One row per successful redemption — this is what makes usageLimit and
-// usageLimitPerUser enforceable (COUNT the rows) and gives an audit trail
-// of exactly which order used which coupon, independent of the Order's
-// own couponCode/discountCents snapshot fields.
-model CouponRedemption {
-  id         String   @id @default(uuid())
-  couponId   String
-  coupon     Coupon   @relation(fields: [couponId], references: [id])
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  orderId    String   @unique
-  order      Order    @relation(fields: [orderId], references: [id])
-  redeemedAt DateTime @default(now())
-
-  @@index([couponId])
-  @@index([userId])
-  @@map("coupon_redemptions")
-}
-
-// ---------------------------------------------------------------------
-// Reviews & Wishlist domain — see docs/modules/reviews.md, wishlist.md
-// ---------------------------------------------------------------------
-
-model Review {
-  id        String  @id @default(uuid())
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  // Proves AND snapshots the verified-purchase check — see
-  // docs/modules/reviews.md for why this is an orderId, not a boolean
-  // computed at read time (an order can be cancelled/refunded after the
-  // review was written; the review should still say what was true when
-  // it was posted).
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id])
-
-  // 1-5. Enforced with a raw-SQL CHECK constraint (see the
-  // review_rating_check migration) — Prisma has no declarative range
-  // check, same situation as the search tsvector column below.
-  rating             Int
-  title              String?
-  body               String
-  isVerifiedPurchase Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([productId, userId])
-  @@index([productId])
-  @@index([userId])
-  @@map("reviews")
-}
-
-model WishlistItem {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@unique([userId, productId])
-  @@index([userId])
-  @@map("wishlist_items")
-}
-
-// ---------------------------------------------------------------------
-// Notifications domain — see docs/modules/notifications.md
-// In-app notifications only. Transactional EMAIL (order confirmations
-// etc.) is a separate concern handled by MailService — see
-// docs/infrastructure/email.md. Don't conflate the two.
-// ---------------------------------------------------------------------
-
-enum NotificationType {
-  ORDER_CONFIRMED
-  ORDER_PAID
-  ORDER_SHIPPED
-  ORDER_DELIVERED
-  ORDER_CANCELLED
-  PROMOTION
-  PASSWORD_RESET
-}
-
-model Notification {
-  id       String           @id @default(uuid())
-  userId   String
-  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type     NotificationType
-  title    String
-  body     String
-  // Structured payload for the frontend to act on (e.g. { orderId }) —
-  // avoid parsing it out of `body`.
-  metadata Json?
-  readAt   DateTime?
-
-  createdAt DateTime @default(now())
-
-  // Serves both "this user's notifications, newest first" and "this
-  // user's UNREAD count" — the second query is the one that runs on
-  // every page load (a notification bell badge), so it needs the index
-  // as much as the list view does.
-  @@index([userId, readAt])
-  @@map("notifications")
 }
