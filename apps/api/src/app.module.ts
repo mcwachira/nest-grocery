@@ -8,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ProductsModule } from './products/products.module';
 import { CategoryModule } from './category/category.module';
+import { CartModule } from './cart/cart.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { CategoryModule } from './category/category.module';
     AuthModule,
     ProductsModule,
     CategoryModule,
+    CartModule,
+    InventoryModule,
   ],
   controllers: [AppController],
   providers: [
