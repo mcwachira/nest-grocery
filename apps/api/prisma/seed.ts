@@ -31,6 +31,7 @@ import {
   ProductStatus,
   OrderStatus,
   PaymentProvider,
+  PaymentStatus,
 } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
@@ -281,6 +282,13 @@ const PRODUCTS_BY_CATEGORY: Record<string, ProductSeed[]> = {
 
 async function cleanup() {
   // Delete in FK-dependency order so this script is safely re-runnable.
+  await prisma.refund.deleteMany();
+  await prisma.payment.deleteMany();
+  await prisma.review.deleteMany();
+  await prisma.wishlistItem.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.couponRedemption.deleteMany();
+  await prisma.coupon.deleteMany();
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.productImage.deleteMany();
@@ -549,15 +557,23 @@ async function seedOrders(
           shippingRegion: address.region,
           shippingPostalCode: address.postalCode,
           shippingCountry: address.country,
-          paymentProvider: plan.provider,
-          paymentReference: isPaid
-            ? `${plan.provider}-${customer.id.slice(0, 8)}-${i}`
-            : null,
           placedAt,
           paidAt: isPaid ? placedAt : null,
           fulfilledAt: isFulfilled ? placedAt : null,
           deliveredAt: isDelivered ? placedAt : null,
           items: { create: items },
+          // Payments moved to their own model (one row per attempt) —
+          // see the add_catalog_promotions_reviews_payments migration.
+          payments: {
+            create: {
+              provider: plan.provider,
+              status: isPaid ? PaymentStatus.SUCCEEDED : PaymentStatus.PENDING,
+              amountCents: totalCents,
+              providerReference: isPaid
+                ? `${plan.provider}-${customer.id.slice(0, 8)}-${i}`
+                : null,
+            },
+          },
         },
       });
     }
