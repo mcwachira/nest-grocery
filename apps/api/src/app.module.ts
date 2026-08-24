@@ -10,6 +10,7 @@ import { ProductsModule } from './products/products.module';
 import { CategoryModule } from './category/category.module';
 import { CartModule } from './cart/cart.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { CouponsModule } from './coupons/coupons.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { InventoryModule } from './inventory/inventory.module';
     CategoryModule,
     CartModule,
     InventoryModule,
+    CouponsModule,
   ],
   controllers: [AppController],
   providers: [
