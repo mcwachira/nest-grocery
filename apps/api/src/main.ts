@@ -6,7 +6,6 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-
   // Strips unknown properties from incoming request bodies (whitelist)
   // and REJECTS the request if an unknown property is present
   // (forbidNonWhitelisted) rather than silently dropping it — the second
@@ -21,7 +20,6 @@ async function bootstrap() {
       transform: true,
     }),
   );
-
 
   //Needed to read thr httpOnl;y refresh cookie in Auth controller
   app.use(cookieParser());
