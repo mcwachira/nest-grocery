@@ -11,6 +11,7 @@ import { CategoryModule } from './category/category.module';
 import { CartModule } from './cart/cart.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { CouponsModule } from './coupons/coupons.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { CouponsModule } from './coupons/coupons.module';
     CartModule,
     InventoryModule,
     CouponsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [
