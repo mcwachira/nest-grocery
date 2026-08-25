@@ -61,12 +61,23 @@ describe('AuthController', () => {
       authService.register.mockResolvedValueOnce({
         accessToken: 'access-token',
         rawRefreshToken: 'raw-refresh-token',
-        user: { id: 'user-1', email: 'a@b.com', firstName: 'A', lastName: 'B', role: 'CUSTOMER' },
+        user: {
+          id: 'user-1',
+          email: 'a@b.com',
+          firstName: 'A',
+          lastName: 'B',
+          role: 'CUSTOMER',
+        },
       });
       const res = createResponseMock();
 
       const result = await controller.register(
-        { email: 'a@b.com', password: 'Password1!', firstName: 'A', lastName: 'B' },
+        {
+          email: 'a@b.com',
+          password: 'Password1!',
+          firstName: 'A',
+          lastName: 'B',
+        },
         res,
       );
 
@@ -80,7 +91,13 @@ describe('AuthController', () => {
       // exactly that leak.
       expect(result).toEqual({
         accessToken: 'access-token',
-        user: { id: 'user-1', email: 'a@b.com', firstName: 'A', lastName: 'B', role: 'CUSTOMER' },
+        user: {
+          id: 'user-1',
+          email: 'a@b.com',
+          firstName: 'A',
+          lastName: 'B',
+          role: 'CUSTOMER',
+        },
       });
       expect(result).not.toHaveProperty('rawRefreshToken');
     });
@@ -134,7 +151,10 @@ describe('AuthController', () => {
 
   describe('me', () => {
     it('delegates to AuthService.findProfile with the id from the guarded request', async () => {
-      authService.findProfile.mockResolvedValueOnce({ id: 'user-1', email: 'a@b.com' });
+      authService.findProfile.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'a@b.com',
+      });
       const req = { user: { userId: 'user-1', role: 'CUSTOMER' } } as any;
 
       const result = await controller.me(req);
