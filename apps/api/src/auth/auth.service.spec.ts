@@ -164,7 +164,10 @@ describe('AuthService', () => {
       prisma.user.findUnique.mockResolvedValueOnce(null);
       let noSuchUserError: Error | undefined;
       try {
-        await service.login({ email: 'ghost@example.com', password: 'whatever1!' });
+        await service.login({
+          email: 'ghost@example.com',
+          password: 'whatever1!',
+        });
       } catch (e) {
         noSuchUserError = e as Error;
       }
@@ -177,7 +180,10 @@ describe('AuthService', () => {
       });
       let wrongPasswordError: Error | undefined;
       try {
-        await service.login({ email: 'real@example.com', password: 'WrongPassword1!' });
+        await service.login({
+          email: 'real@example.com',
+          password: 'WrongPassword1!',
+        });
       } catch (e) {
         wrongPasswordError = e as Error;
       }
@@ -242,7 +248,13 @@ describe('AuthService', () => {
         userId: 'user-1',
         revokedAt: null,
         expiresAt: new Date(Date.now() + 100000),
-        user: { id: 'user-1', role: 'CUSTOMER', email: 'a@b.com', firstName: 'A', lastName: 'B' },
+        user: {
+          id: 'user-1',
+          role: 'CUSTOMER',
+          email: 'a@b.com',
+          firstName: 'A',
+          lastName: 'B',
+        },
       });
       prisma.refreshToken.update.mockResolvedValueOnce({});
       prisma.refreshToken.create.mockResolvedValueOnce({});
