@@ -7,6 +7,12 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ProductsModule } from './products/products.module';
+import { CategoryModule } from './category/category.module';
+import { CartModule } from './cart/cart.module';
+import { InventoryModule } from './inventory/inventory.module';
+import { CouponsModule } from './coupons/coupons.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { CheckoutModule } from './checkout/checkout.module';
 
 @Module({
   imports: [
@@ -25,6 +31,12 @@ import { ProductsModule } from './products/products.module';
     PrismaModule,
     AuthModule,
     ProductsModule,
+    CategoryModule,
+    CartModule,
+    InventoryModule,
+    CouponsModule,
+    NotificationsModule,
+    CheckoutModule,
   ],
   controllers: [AppController],
   providers: [
